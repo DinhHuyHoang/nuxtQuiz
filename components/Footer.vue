@@ -2,7 +2,7 @@
   <v-container fluid pa-0>
     <v-row style="background-color:#b40002;height:40px;" class="justify-center align-center white--text">
       <!-- eslint-disable-next-line -->
-      <div class="title text-uppercase font-weight-bold" style="line-height: 2;" v-html="$sanitize(pageInfo.Bottom) || ''"/>
+      <span class="subtitle text-uppercase font-weight-bold" style="line-height: 2;" v-html="$sanitize(pageInfo.Bottom) || ''"/>
     </v-row>
   </v-container>
 </template>

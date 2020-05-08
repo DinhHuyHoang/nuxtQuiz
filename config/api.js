@@ -41,10 +41,13 @@ export default {
     };
   },
 
-  getAnswers({ studentId, studentTestId }) {
+  getAnswers({ studentId, studentTestId, clientInfo }) {
     return {
-      method: 'GET',
-      url: baseURL + `/ClientAnswer/${studentId}/${studentTestId}`
+      method: 'POST',
+      url: baseURL + `/ClientAnswer/${studentId}/${studentTestId}`,
+      data: {
+        ClientInfo: clientInfo
+      }
     };
   },
 
@@ -152,6 +155,14 @@ export default {
     return {
       method: 'GET',
       url: baseURL + `/ClientGetMark/${studentId}/${studentTestId}`
+    };
+  },
+
+  resetPassword({ phone }) { // ClientPasswordReset
+    return {
+      method: 'POST',
+      url: baseURL + '/ClientPasswordReset',
+      data: { ...phone }
     };
   }
 };

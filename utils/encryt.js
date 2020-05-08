@@ -21,7 +21,7 @@ export const myDecode = function (data) {
 
 export const saveLocal = function (key, value) {
   if (value) {
-    localStorage.setItem(key, Base64.encode(JSON.stringify(value)));
+    localStorage.setItem(key, myEncode(JSON.stringify(value)));
     return true;
   }
   return false;
@@ -29,7 +29,7 @@ export const saveLocal = function (key, value) {
 
 export const getLocal = function (key) {
   const value = localStorage.getItem(key);
-  if (value) { return JSON.parse(Base64.decode(value)); }
+  if (value) { return JSON.parse(myDecode(value)); }
   return false;
 };
 

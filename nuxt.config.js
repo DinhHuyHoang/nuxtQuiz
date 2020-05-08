@@ -22,7 +22,8 @@ export default {
   */
   plugins: [
     '~/plugins/axios',
-    '~/plugins/sanitize'
+    '~/plugins/sanitize',
+    '~/plugins/client'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -72,7 +73,7 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.darken4,
           error: colors.deepOrange.accent4,
-          success: colors.green
+          success: colors.green.darken2
         }
       }
     }
@@ -84,7 +85,11 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
+    extend(config, { isClient }) {
+      if (isClient) {
+        // config.devtool = 'source-map';
+        config.optimization.splitChunks.maxSize = 200000;
+      }
     }
   },
   router: {
@@ -106,6 +111,11 @@ export default {
         name: 'home',
         url: 'http://118.69.126.39:3333',
         default: true
+      },
+
+      {
+        name: 'test',
+        url: 'http://127.0.0.1:3333'
       }
     ]
   }

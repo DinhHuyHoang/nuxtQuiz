@@ -10,7 +10,7 @@
     </div>
     <v-card v-for="(item, key) in model" v-else :key="key" class="mb-5">
       <v-card-title class="justify-center">
-        <div class="display-1 font-weight-black">
+        <div class="headline font-weight-black">
           Thông tin kỳ thi
         </div>
       </v-card-title>
@@ -18,12 +18,47 @@
         <div class="headline py-2 text-center">
           {{ item.ExamName }}
         </div>
-        <div v-if="item.TestStatus !== 0" class="headline py-2 text-center">
-          <span>Bắt đầu: {{ item.StartTime }}</span>
-          <span>---------</span>
-          <span>Kết thúc: {{ item.endTime }}</span>
-        </div>
-        <v-row>
+        <template v-if="item.TestStatus !== 0">
+          <v-row no-gutters="">
+            <v-col cols="12">
+              <v-row no-gutters="" class="headline align-center">
+                <v-col cols="7">
+                  <div class="py-2">
+                    Bắt đầu
+                  </div>
+                </v-col>
+                <v-col>
+                  <div>
+                    <strong
+                      class="font-weight-black"
+                    >: {{ item.StartTime }}</strong>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-row no-gutters="" class="headline align-center">
+                <v-col cols="7">
+                  <div class="py-2">
+                    Kết thúc
+                  </div>
+                </v-col>
+                <v-col>
+                  <div>
+                    <strong
+                      class="font-weight-black"
+                    >: {{ item.endTime }}</strong>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </template>
+
+        <v-row no-gutters="">
           <v-col cols="12">
             <v-row no-gutters="" class="headline align-center">
               <v-col cols="7">
@@ -33,13 +68,15 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong class="font-weight-black">: {{ item.TongSoCau }}</strong>
+                  <strong
+                    class="font-weight-black"
+                  >: {{ item.TongSoCau }}</strong>
                 </div>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row no-gutters="">
           <v-col cols="12">
             <div class="headline pr-5" />
             <v-row no-gutters="" class="headline align-center">
@@ -50,9 +87,10 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong class="font-weight-black">: {{
-                    item.TimePerQuestion
-                  }}</strong> giây
+                  <strong
+                    class="font-weight-black"
+                  >: {{ item.TimePerQuestion }}</strong>
+                  giây
                 </div>
               </v-col>
             </v-row>
@@ -66,22 +104,22 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong class="font-weight-black">: {{
-                    item.TinhTrangLamBai
-                  }}</strong>
+                  <strong
+                    class="font-weight-black"
+                  >: {{ item.TinhTrangLamBai }}</strong>
                 </div>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
         <v-spacer class="mt-5" />
-        <div>
+        <div class="text-justify">
           <strong
             class="subtitle-1 red--text font-weight-black font-italic"
           >{{ item.ThongTin }}
           </strong>
         </div>
-        <div>
+        <div class="text-justify mt-3">
           <strong
             class="subtitle-1 red--text font-weight-black font-italic"
           >Ghi chú: {{ item.GhiChu }}

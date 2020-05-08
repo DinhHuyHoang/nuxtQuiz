@@ -12,7 +12,7 @@
         text
         @click="isShowUp = false"
       >
-        Close
+        <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
   </div>

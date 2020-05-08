@@ -1,6 +1,7 @@
 <template>
   <v-row no-gutters>
     <v-col>
+      <!-- timer bar -->
       <v-row no-gutters class="fixed">
         <v-col>
           <v-card style="border-radius:0;" flat color="#b40002">
@@ -28,22 +29,10 @@
                       Câu tiếp theo
                     </v-btn>
                   </div>
-                  <!-- <div v-else>
-                    <v-btn
-                      elevation="5"
-                      class="white--text"
-                      style="font-size: 1.1em;"
-                      :disabled="isExistsQuestionsUnresolve || isFinished"
-                      color="transparent"
-                      @click="FinishedTest()"
-                    >
-                      Nộp bài
-                    </v-btn>
-                  </div> -->
                 </v-col>
               </v-row>
-              <v-row v-if="onErrorWhenFinish">
-                <v-col>
+              <v-row>
+                <v-col v-if="onErrorWhenFinish">
                   <div class="text-center title">
                     Vui lòng không tắt trình duyệt bài làm đang được lưu lại...
                   </div>
@@ -53,6 +42,8 @@
           </v-card>
         </v-col>
       </v-row>
+
+      <!-- section question -->
       <v-row no-gutters="">
         <v-col>
           <v-container pa-0>
@@ -65,9 +56,7 @@
                         <v-progress-circular indeterminate color="primary" />
                       </v-col>
                     </v-row>
-                    <v-row
-                      v-if="!isLoading && Object.keys(currentQuestion).length"
-                    >
+                    <v-row v-if="!isLoading && Object.keys(currentQuestion).length">
                       <v-col>
                         <p style="text-align: justify;" class="headline">
                           {{ currentQuestion.STT + ". " }}
@@ -217,21 +206,26 @@ export default {
         this.fetchAnswer(studentId, studentTestId)
       ]).then(res => res);
 
+      if (!questions.length || !answers.length) {
+        this.$nextTick(() => {
+          const { SnackBar } = this.$refs;
+          SnackBar.notify({
+            type: 'warning',
+            message: 'Không thể lấy bài thi',
+            timeout: 4000,
+            callBack: () => { this.finishedExam(); }
+          });
+        });
+
+        return;
+      }
+
       this.fetchAlert(studentId, studentTestId);
 
-      // decode
       const filterQuestions = this.filterQuestionWithCurrent(questions);
-      const questionsAnswers = this.mapAnswersToQuestion(
-        filterQuestions,
-        answers
-      );
-
-      // init time by exam
-      if (!getLocal(keys.currentTime)) {
-        this.inittimePerQuestion();
-      } else {
-        this.updatetimePerQuestion();
-      }
+      const questionsAnswers = this.mapAnswersToQuestion(filterQuestions, answers);
+      const initOrUpdateTime = !getLocal(keys.currentTime) ? this.initTimePerQuestion : this.updatetimePerQuestion;
+      initOrUpdateTime();
 
       // start
       this.questions = questions;
@@ -294,19 +288,11 @@ export default {
       //   console.log('nextQuestionRes',JSON.parse(myDecode(data)))
       // })
 
-      window.addEventListener('keyup', (event) => {
-        if (event.keyCode === 13) {
-          if (!this.isLastQuestion) {
-            this.nextQuestion();
-          } else {
-            this.FinishedTest();
-          }
-        }
-      });
-
       window.onbeforeunload = (event) => {
-        if (!this.isFinished) {
-          event.returnValue = 'Something is lost...';
+        if (this.checkNativeInterval()) {
+          if (!this.isFinished) {
+            event.returnValue = 'Something is lost...';
+          }
         }
       };
     });
@@ -316,22 +302,16 @@ export default {
     checkExsitsResolveQuestion() {
       const data = getLocal(keys.questions);
       const index = data.findIndex(item => item.state === 'pendding');
-
-      if (index !== -1) {
-        return true;
-      }
-      return false;
+      return index !== -1;
     },
 
-    async fetchAnswerQuestion(callBack = undefined) {
+    async fetchAnswerQuestion() {
       const localQuestions = getLocal(keys.questions);
-      const currentQuestion = localQuestions.find(
-        item => item.state === 'pendding'
-      );
+      const index = localQuestions.findIndex(item => item.state === 'pendding');
 
       try {
-        if (currentQuestion) {
-          // const currentQuestion = localQuestions[index]
+        if (index !== -1) {
+          const currentQuestion = localQuestions[index];
 
           this.socket.emit(
             'nextQuestion',
@@ -360,6 +340,10 @@ export default {
                   }
                 } while (question?.STT !== data[0].STTCauHoiTiepTheo);
               }
+
+              localQuestions[index].state = 'resolve';
+              saveLocal(keys.questions, localQuestions);
+              this.questions = getLocal(keys.questions);
             }
           );
 
@@ -372,17 +356,13 @@ export default {
               answer: currentQuestion.answerSelected
             })
           );
-
-          currentQuestion.state = 'resolve';
-          saveLocal(keys.questions, localQuestions);
-          this.questions = getLocal(keys.questions);
         }
 
         // Finish phase
         if (
           !this.isExistsQuestionsUnresolve &&
           this.isLastQuestion &&
-          !currentQuestion
+          index === -1
         ) {
           clearInterval(this.intervalFetch);
           clearInterval(this.intervalCountDown);
@@ -446,10 +426,23 @@ export default {
       }
 
       const answers = (
-        await this.$axios(API.getAnswers({ studentId, studentTestId }))
+        await this.$axios(API.getAnswers({ studentId, studentTestId, clientInfo: this.getDeviceInfo() }))
       ).data;
       saveLocal(keys.answers, answers);
       return answers;
+    },
+
+    getDeviceInfo() {
+      // eslint-disable-next-line no-undef
+      const client = new window.ClientJS();
+
+      let str = '{' + client.getFingerprint() + '}{';
+      if (client.getDevice() !== undefined) { str += client.getDeviceVendor() + ' ' + client.getDevice() + ' · '; }
+      if (client.getOS() !== undefined) { str += client.getOS() + ' ' + client.getOSVersion() + ' · '; }
+      if (client.getBrowser() !== undefined) { str += client.getBrowser() + ' ' + client.getBrowserMajorVersion(); }
+      str += '}';
+
+      return str;
     },
 
     updateCurrentQuestion(currentQuestion) {
@@ -459,47 +452,50 @@ export default {
 
     filterQuestionWithCurrent(questions) {
       const curQuestion = getLocal(keys.currentQuestion);
+      if (!curQuestion) { return questions; }
 
-      if (curQuestion) {
-        const index = questions.findIndex(
-          question => question.STT === curQuestion.STT
-        );
-        questions = questions.slice(index);
-      }
+      const index = questions.findIndex(
+        question => question.STT === curQuestion.STT
+      );
 
-      return questions;
+      return questions.slice(index);
     },
 
     mapAnswersToQuestion(questions, answers) {
       const result = [];
-      const questionsTemp = questions.slice();
 
-      for (const question of questionsTemp) {
-        question.answerSelected = 0;
-        question.timeAnswer = null;
-        question.state = 'init';
+      for (const question of questions) {
+        const {
+          QuestionID,
+          isDecode,
+          QuestionContent,
+          OrderAnswer
+        } = question;
 
-        let answersPerQuestion = this.getAnswersByQuestion(
-          question.QuestionID,
-          answers
-        );
-        answersPerQuestion = this.sortAnswerByRule(
-          question.OrderAnswer,
-          answersPerQuestion
-        );
-        question.QuestionContent =
-          (question.isDecode && question.QuestionContent) ||
-          Base64.decode(question.QuestionContent);
+        const arr = answers.filter(answer => answer.QuestionID === QuestionID);
+        const OrderAnswerFake = Object.keys(arr).map(key => Number(key) + 1);
 
-        question.isDecode = true;
-        result.push({ ...question, answers: answersPerQuestion });
+        let answersPerQuestion = this.getAnswersByQuestion(QuestionID, answers);
+        answersPerQuestion = this.sortAnswerByRule(OrderAnswerFake.join(''), answersPerQuestion);
+        const questionContent = isDecode ? QuestionContent : Base64.decode(QuestionContent);
+
+        const questionTransform = {
+          ...question,
+          answerSelected: 0,
+          timeAnswer: null,
+          state: 'init',
+          QuestionContent: questionContent,
+          isDecode: true
+        };
+
+        result.push({ ...questionTransform, answers: answersPerQuestion });
       }
 
       return result;
     },
 
-    inittimePerQuestion() {
-      this.time = this.timePerQuestion * 1000 + 1000;
+    initTimePerQuestion() {
+      this.time = this.timePerQuestion * 1000;
       this.timeRemaining = this.time - 1000;
       saveLocal(keys.currentTime, this.timeRemaining);
     },
@@ -537,9 +533,12 @@ export default {
     },
 
     updateTimeRemain() {
-      this.currentQuestion.timeAnswer =
-        this.timeRemaining / 1000 <= 0 ? 0 : this.timeRemaining / 1000;
-      this.currentQuestion.state = 'pendding';
+      const timeRemain = this.timeRemaining / 1000;
+      this.currentQuestion = {
+        ...this.currentQuestion,
+        timeAnswer: timeRemain <= 0 ? 0 : timeRemain,
+        state: 'pendding'
+      };
 
       const index = this.questions.findIndex(
         question => question.STT === this.currentQuestion.STT
@@ -585,6 +584,19 @@ export default {
             studentTestId: this.examInfo.StudentTestID
           })
         );
+
+        const dataSocket = myEncode(JSON.stringify({
+          studentTestId: this.examInfo.StudentTestID
+        }));
+
+        this.socket.emit(
+          'clientCompleted',
+          dataSocket,
+          ({ data }) => {
+            data = JSON.parse(myDecode(data));
+            console.log('clientCompleted', data);
+          }
+        );
         this.stopExam();
         // this.finishedExam()
       } catch (error) {
@@ -612,8 +624,21 @@ export default {
     },
 
     nextQuestion() {
+      if (!this.checkNativeInterval()) {
+        this.$nextTick(() => {
+          const { SnackBar } = this.$refs;
+          SnackBar.notify({
+            type: 'warning',
+            message: 'Bạn đang cố gắng phá hệ thống!',
+            timeout: 4000,
+            callBack: () => { this.finishedExam(); }
+          });
+        });
+        return;
+      }
+
       this.updateTimeRemain();
-      this.inittimePerQuestion();
+      this.initTimePerQuestion();
       this.stopExam();
       this.startExam();
 
@@ -632,6 +657,11 @@ export default {
       this.intervalFetch = setInterval(async () => {
         await this.fetchAnswerQuestion();
       }, 500);
+    },
+
+    checkNativeInterval() {
+      const isValid = /\{\s+\[native code\]/.test(setInterval.toString());
+      return isValid;
     }
   }
 };

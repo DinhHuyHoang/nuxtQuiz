@@ -27,10 +27,10 @@
     <v-divider />
 
     <v-list subheader dense>
-      <v-list-item class="title font-weight-bold">
+      <v-list-item class="title font-weight-bold text-uppercase">
         Lần thi điểm cao nhất
       </v-list-item>
-      <v-list-item v-for="item in [{key: 'NgayThi', text: 'Thời gian'}, {key: 'SoCauDung', text: 'Số câu đúng'}, {key: 'DiemThi', text: 'Điểm thi'}, {key: 'ThoiGianLamBai', text: 'Thời gian làm bài'}]" :key="item.key" link>
+      <v-list-item v-for="item in [{key: 'NgayThi', text: 'Thời gian'}, {key: 'SoCauDung', text: 'Số câu đúng'}, {key: 'DiemThi', text: 'Điểm thi'}, {key: 'ThoiGianLamBai', text: 'Thời gian làm bài (giây)'}]" :key="item.key" link>
         <v-list-item-content class="pa-0">
           <v-list-item-subtitle style="line-height:unset;" class="title">
             {{ item.text }}: {{ model[item.key] }}
