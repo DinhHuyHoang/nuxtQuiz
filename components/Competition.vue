@@ -20,11 +20,12 @@
                 <v-col class="text-center">
                   <div v-if="!isLastQuestion">
                     <v-btn
+                      ref="btnNext"
                       elevation="5"
                       class="white--text"
                       style="font-size: 1.1em;"
                       color="transparent"
-                      @click="nextQuestion()"
+                      @click="nextQuestionCheckEl($event)"
                     >
                       Câu tiếp theo
                     </v-btn>
@@ -56,29 +57,30 @@
                         <v-progress-circular indeterminate color="primary" />
                       </v-col>
                     </v-row>
-                    <v-row v-if="!isLoading && Object.keys(currentQuestion).length">
+                    <v-row
+                      v-if="!isLoading && Object.keys(currentQuestion).length"
+                    >
                       <v-col>
                         <p style="text-align: justify;" class="headline">
                           {{ currentQuestion.STT + ". " }}
-                          <!-- eslint-disable -->
-                          <span
-                            v-html="$sanitize(currentQuestion.QuestionContent)"
-                          ></span>
+                          <!-- eslint-disable-next-line vue/no-v-html -->
+                          <span v-html="$sanitize(currentQuestion.QuestionContent)" />
                         </p>
-                        <v-radio-group v-model="modelRadio">
-                          <v-radio
-                            v-for="(answer,
-                            answerKey) in currentQuestion.answers"
-                            :key="answerKey"
-                            :disabled="isLastQuestion"
-                            class="py-2"
-                            :label="
-                              `${answer.alphabet}. ${answer.AnswerContent}`
-                            "
-                            :value="answer.AnswerNumber"
-                            @change="selectAnswer(answer)"
-                          ></v-radio>
-                        </v-radio-group>
+                        <div @click="selectAnswerMouseDown">
+                          <v-radio-group v-model="modelRadio" @change="selectAnswer">
+                            <v-radio
+                              v-for="(answer,
+                                      answerKey) in currentQuestion.answers"
+                              :key="answerKey"
+                              :disabled="isLastQuestion"
+                              class="py-2"
+                              :label="
+                                `${answer.alphabet}. ${answer.AnswerContent}`
+                              "
+                              :value="answer.AnswerNumber"
+                            />
+                          </v-radio-group>
+                        </div>
                       </v-col>
                     </v-row>
                     <v-row style="user-select: none;" justify="center">
@@ -213,7 +215,9 @@ export default {
             type: 'warning',
             message: 'Không thể lấy bài thi',
             timeout: 4000,
-            callBack: () => { this.finishedExam(); }
+            callBack: () => {
+              this.finishedExam();
+            }
           });
         });
 
@@ -223,8 +227,13 @@ export default {
       this.fetchAlert(studentId, studentTestId);
 
       const filterQuestions = this.filterQuestionWithCurrent(questions);
-      const questionsAnswers = this.mapAnswersToQuestion(filterQuestions, answers);
-      const initOrUpdateTime = !getLocal(keys.currentTime) ? this.initTimePerQuestion : this.updatetimePerQuestion;
+      const questionsAnswers = this.mapAnswersToQuestion(
+        filterQuestions,
+        answers
+      );
+      const initOrUpdateTime = !getLocal(keys.currentTime)
+        ? this.initTimePerQuestion
+        : this.updatetimePerQuestion;
       initOrUpdateTime();
 
       // start
@@ -238,8 +247,15 @@ export default {
 
       this.isLoading = false;
     } catch (error) {
-      console.error(error);
-      this.finishedExam();
+      this.$nextTick(() => {
+        const { SnackBar } = this.$refs;
+        SnackBar.notify({
+          type: 'error',
+          message: error.message || '',
+          timeout: 5000,
+          callback: () => { this.finishedExam(); }
+        });
+      });
     }
   },
 
@@ -248,7 +264,7 @@ export default {
       examInfo: null,
       userInfo: null,
       isLastQuestion: false,
-      modelRadio: {},
+      modelRadio: 0,
       questions: [],
       questionsRaw: null,
       questionGenerator: {},
@@ -265,7 +281,10 @@ export default {
       isExistsQuestionsUnresolve: true,
       isLoading: true,
       isFinished: false,
-      scores: null
+      scores: null,
+      elNextQuestion: null,
+      isUserClick: false,
+      isSelectAnswerClick: undefined
     };
   },
 
@@ -283,18 +302,28 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
-      // eslint-disable-next-line nuxt/no-globals-in-created
       // this.socket.on('nextQuestionRes', (data) => {
       //   console.log('nextQuestionRes',JSON.parse(myDecode(data)))
       // })
 
-      window.onbeforeunload = (event) => {
-        if (this.checkNativeInterval()) {
-          if (!this.isFinished) {
-            event.returnValue = 'Something is lost...';
-          }
-        }
-      };
+      // window.onbeforeunload = (event) => {
+      //   if (this.checkNativeInterval()) {
+      //     if (!this.isFinished) {
+      //       event.returnValue = 'Something is lost...';
+      //     }
+      //   }
+      // };
+    });
+
+    this.$refs.btnNext.$el.addEventListener('click', (event) => {
+      const x = event.clientX;
+      const y = event.clientY;
+      const elementMouseIsOver = document.elementFromPoint(x, y);
+      const isValid = elementMouseIsOver === this.elNextQuestion;
+
+      if (isValid && event.isTrusted) {
+        this.nextQuestion();
+      }
     });
   },
 
@@ -315,7 +344,12 @@ export default {
 
           this.socket.emit(
             'nextQuestion',
-            myEncode(JSON.stringify(currentQuestion)),
+            myEncode(
+              JSON.stringify({
+                ...currentQuestion,
+                userInfo: { ...this.userInfo }
+              })
+            ),
             ({ data }) => {
               data = JSON.parse(myDecode(data));
 
@@ -426,7 +460,14 @@ export default {
       }
 
       const answers = (
-        await this.$axios(API.getAnswers({ studentId, studentTestId, clientInfo: this.getDeviceInfo() }))
+        await this.$axios(
+          API.getAnswers({
+            studentId,
+            studentTestId,
+            clientInfo: this.getDeviceInfo(),
+            captcha: this.model.captcha || ''
+          })
+        )
       ).data;
       saveLocal(keys.answers, answers);
       return answers;
@@ -437,9 +478,15 @@ export default {
       const client = new window.ClientJS();
 
       let str = '{' + client.getFingerprint() + '}{';
-      if (client.getDevice() !== undefined) { str += client.getDeviceVendor() + ' ' + client.getDevice() + ' · '; }
-      if (client.getOS() !== undefined) { str += client.getOS() + ' ' + client.getOSVersion() + ' · '; }
-      if (client.getBrowser() !== undefined) { str += client.getBrowser() + ' ' + client.getBrowserMajorVersion(); }
+      if (client.getDevice() !== undefined) {
+        str += client.getDeviceVendor() + ' ' + client.getDevice() + ' · ';
+      }
+      if (client.getOS() !== undefined) {
+        str += client.getOS() + ' ' + client.getOSVersion() + ' · ';
+      }
+      if (client.getBrowser() !== undefined) {
+        str += client.getBrowser() + ' ' + client.getBrowserMajorVersion();
+      }
       str += '}';
 
       return str;
@@ -452,7 +499,9 @@ export default {
 
     filterQuestionWithCurrent(questions) {
       const curQuestion = getLocal(keys.currentQuestion);
-      if (!curQuestion) { return questions; }
+      if (!curQuestion) {
+        return questions;
+      }
 
       const index = questions.findIndex(
         question => question.STT === curQuestion.STT
@@ -465,19 +514,19 @@ export default {
       const result = [];
 
       for (const question of questions) {
-        const {
-          QuestionID,
-          isDecode,
-          QuestionContent,
-          OrderAnswer
-        } = question;
+        const { QuestionID, isDecode, QuestionContent, OrderAnswer } = question;
 
         const arr = answers.filter(answer => answer.QuestionID === QuestionID);
         const OrderAnswerFake = Object.keys(arr).map(key => Number(key) + 1);
 
         let answersPerQuestion = this.getAnswersByQuestion(QuestionID, answers);
-        answersPerQuestion = this.sortAnswerByRule(OrderAnswerFake.join(''), answersPerQuestion);
-        const questionContent = isDecode ? QuestionContent : Base64.decode(QuestionContent);
+        answersPerQuestion = this.sortAnswerByRule(
+          OrderAnswerFake.join(''),
+          answersPerQuestion
+        );
+        const questionContent = isDecode
+          ? QuestionContent
+          : Base64.decode(QuestionContent);
 
         const questionTransform = {
           ...question,
@@ -536,7 +585,7 @@ export default {
       const timeRemain = this.timeRemaining / 1000;
       this.currentQuestion = {
         ...this.currentQuestion,
-        timeAnswer: timeRemain <= 0 ? 0 : timeRemain,
+        timeAnswer: 61, // (timeRemain <= 0 ? 0 : timeRemain) * -1,
         state: 'pendding'
       };
 
@@ -572,7 +621,15 @@ export default {
     },
 
     selectAnswer(answer) {
-      this.currentQuestion.answerSelected = answer.AnswerNumber;
+      this.modelRadio = answer;
+    },
+
+    selectAnswerMouseDown(event) {
+      if (event.isTrusted) {
+        this.currentQuestion.answerSelected = this.modelRadio;
+      } else {
+        this.currentQuestion.answerSelected = -1;
+      }
     },
 
     async fetchFinishTest() {
@@ -585,18 +642,16 @@ export default {
           })
         );
 
-        const dataSocket = myEncode(JSON.stringify({
-          studentTestId: this.examInfo.StudentTestID
-        }));
-
-        this.socket.emit(
-          'clientCompleted',
-          dataSocket,
-          ({ data }) => {
-            data = JSON.parse(myDecode(data));
-            console.log('clientCompleted', data);
-          }
+        const dataSocket = myEncode(
+          JSON.stringify({
+            studentTestId: this.examInfo.StudentTestID
+          })
         );
+
+        this.socket.emit('clientCompleted', dataSocket, ({ data }) => {
+          data = JSON.parse(myDecode(data));
+          console.log('clientCompleted', data);
+        });
         this.stopExam();
         // this.finishedExam()
       } catch (error) {
@@ -623,7 +678,11 @@ export default {
       }
     },
 
-    nextQuestion() {
+    nextQuestionCheckEl(event) {
+      this.elNextQuestion = event.target;
+    },
+
+    nextQuestion(event) {
       if (!this.checkNativeInterval()) {
         this.$nextTick(() => {
           const { SnackBar } = this.$refs;
@@ -631,12 +690,13 @@ export default {
             type: 'warning',
             message: 'Bạn đang cố gắng phá hệ thống!',
             timeout: 4000,
-            callBack: () => { this.finishedExam(); }
+            callBack: () => {
+              this.finishedExam();
+            }
           });
         });
         return;
       }
-
       this.updateTimeRemain();
       this.initTimePerQuestion();
       this.stopExam();
@@ -648,7 +708,7 @@ export default {
         this.isLastQuestion = true;
         this.FinishedTest();
       } else {
-        this.modelRadio = undefined;
+        this.modelRadio = 0;
         this.updateCurrentQuestion(question.value);
       }
     },
@@ -656,7 +716,7 @@ export default {
     startServiceFetch() {
       this.intervalFetch = setInterval(async () => {
         await this.fetchAnswerQuestion();
-      }, 500);
+      }, 100);
     },
 
     checkNativeInterval() {

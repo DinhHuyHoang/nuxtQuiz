@@ -13,7 +13,10 @@
                   STT
                 </th>
                 <th class="text-left">
-                  Thời gian
+                  Thời gian bắt đầu
+                </th>
+                <th class="text-left">
+                  Thời gian kết thúc
                 </th>
                 <th class="text-left">
                   Số câu đúng
@@ -30,6 +33,7 @@
               <tr v-for="item in exams" :key="item.STT">
                 <td>{{ item.STT }}</td>
                 <td>{{ item.ThoiGianThi }}</td>
+                <td>{{ item.ThoiGianKetThuc }}</td>
                 <td>{{ item.SoCauDung }}</td>
                 <td>{{ item.SoDiem }}</td>
                 <td>{{ item.ThoiGianLamBai }}</td>

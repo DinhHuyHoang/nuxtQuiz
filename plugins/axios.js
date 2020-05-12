@@ -16,6 +16,10 @@ export default function ({ $axios, redirect, store, ...data }) {
     if (code === 400) {
       redirect('/400');
     }
+
+    if (code === 500) {
+      throw new Error(error.response.data.Message);
+    }
   });
 
   $axios.onResponse((response) => {

@@ -30,7 +30,7 @@ export default {
   examInfo({ studentId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientGetExamInform/${studentId}`
+      url: baseURL + `/obj/ClientGetExamInform/${studentId}`
     };
   },
 
@@ -41,12 +41,13 @@ export default {
     };
   },
 
-  getAnswers({ studentId, studentTestId, clientInfo }) {
+  getAnswers({ studentId, studentTestId, clientInfo, captcha }) {
     return {
       method: 'POST',
       url: baseURL + `/ClientAnswer/${studentId}/${studentTestId}`,
       data: {
-        ClientInfo: clientInfo
+        ClientInfo: clientInfo,
+        SessionID: captcha
       }
     };
   },
@@ -164,5 +165,13 @@ export default {
       url: baseURL + '/ClientPasswordReset',
       data: { ...phone }
     };
+  },
+
+  getCaptcha({ studentTestId }) {
+    return {
+      method: 'GET',
+      url: baseURL + `/obj/ClientSessionID/${studentTestId}`
+    };
   }
 };
+;

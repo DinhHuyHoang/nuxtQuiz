@@ -13,6 +13,6 @@ module.exports = {
     }
   ],
   script: [
-    { src: 'https://app.lhu.edu.vn/Scripts/client.min.js' }
+    { src: 'scripts/client.min.js' }
   ]
 };

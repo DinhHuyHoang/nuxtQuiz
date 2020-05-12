@@ -58,7 +58,7 @@
               <v-row>
                 <v-col>
                   <Competition
-                    :model="{ userInfo, examInfo: currentExam }"
+                    :model="{ userInfo, examInfo: currentExam, captcha}"
                     :finished-exam="finished"
                     :hidden-header="hiddenHeader"
                     :back="back"
@@ -198,6 +198,7 @@ export default {
   },
 
   data: () => ({
+    captcha: null,
     isHiddenHeader: false,
     drawer: false,
     dialogUpdateUser: false,
@@ -253,7 +254,7 @@ export default {
 
   mounted() {
     const socket = this.$nuxtSocket({
-      name: 'home',
+      name: process.env.NODE_ENV === 'development' ? 'test' : 'home',
       teardown: false,
       transports: ['websocket']
     });
@@ -287,7 +288,9 @@ export default {
       }
     },
 
-    startExam(curExamInfo) {
+    startExam(curExamInfo, captcha) {
+      this.captcha = captcha;
+
       if (curExamInfo.TestStatus === 0) {
         this.isDoingTest = true;
         this.currentExam = curExamInfo;

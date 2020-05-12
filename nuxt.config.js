@@ -86,6 +86,10 @@ export default {
     ** You can extend webpack config here
     */
     extend(config, { isClient }) {
+      config.node = {
+        fs: 'empty'
+      };
+
       if (isClient) {
         // config.devtool = 'source-map';
         config.optimization.splitChunks.maxSize = 200000;
