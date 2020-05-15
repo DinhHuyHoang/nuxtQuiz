@@ -5,52 +5,46 @@ import myHead from './config/head';
 export default {
   mode: 'spa',
   /*
-  ** Headers of the page
-  */
+   ** Headers of the page
+   */
   head: myHead,
   /*
-  ** Customize the progress-bar color
-  */
+   ** Customize the progress-bar color
+   */
   loading: { color: '#fff' },
   /*
-  ** Global CSS
-  */
-  css: [
-  ],
+   ** Global CSS
+   */
+  css: [],
   /*
-  ** Plugins to load before mounting the App
-  */
-  plugins: [
-    '~/plugins/axios',
-    '~/plugins/sanitize',
-    '~/plugins/client'
-  ],
+   ** Plugins to load before mounting the App
+   */
+  plugins: ['~/plugins/axios', '~/plugins/sanitize', '~/plugins/client'],
   /*
-  ** Nuxt.js dev-modules
-  */
+   ** Nuxt.js dev-modules
+   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
   ],
   /*
-  ** Nuxt.js modules
-  */
+   ** Nuxt.js modules
+   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    'nuxt-socket-io'
+    'nuxt-socket-io',
   ],
   /*
-  ** Axios module configuration
-  ** See https://axios.nuxtjs.org/options
-  */
-  axios: {
-  },
+   ** Axios module configuration
+   ** See https://axios.nuxtjs.org/options
+   */
+  axios: {},
   /*
-  ** vuetify module configuration
-  ** https://github.com/nuxt-community/vuetify-module
-  */
+   ** vuetify module configuration
+   ** https://github.com/nuxt-community/vuetify-module
+   */
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
@@ -63,7 +57,7 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
-          success: colors.green.accent3
+          success: colors.green.accent3,
         },
 
         light: {
@@ -73,28 +67,40 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.darken4,
           error: colors.deepOrange.accent4,
-          success: colors.green.darken2
-        }
-      }
-    }
+          success: colors.green.darken2,
+        },
+      },
+    },
   },
   /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   build: {
     /*
-    ** You can extend webpack config here
-    */
-    extend(config, { isClient }) {
+     ** You can extend webpack config here
+     */
+    extend(config, { isDev, isClient }) {
       config.node = {
-        fs: 'empty'
+        fs: 'empty',
       };
 
       if (isClient) {
-        // config.devtool = 'source-map';
         config.optimization.splitChunks.maxSize = 200000;
       }
-    }
+
+      if (isDev) {
+        config.devtool = 'eval-cheap-source-map';
+      }
+
+      if (isDev && isClient) {
+        config.module.rules.push({
+          enforce: 'pre',
+          test: /\.(js|vue)$/,
+          loader: 'eslint-loader',
+          exclude: /(node_modules)/,
+        });
+      }
+    },
   },
   router: {
     base: '/etest',
@@ -104,9 +110,12 @@ export default {
       routes.splice(
         0,
         routes.length,
-        ...myRouters.map(route => ({ ...route, component: resolve(__dirname, route.component) }))
+        ...myRouters.map((route) => ({
+          ...route,
+          component: resolve(__dirname, route.component),
+        }))
       );
-    }
+    },
   },
 
   io: {
@@ -114,13 +123,13 @@ export default {
       {
         name: 'home',
         url: 'http://118.69.126.39:3333',
-        default: true
+        default: true,
       },
 
       {
         name: 'test',
-        url: 'http://127.0.0.1:3333'
-      }
-    ]
-  }
+        url: 'http://127.0.0.1:3333',
+      },
+    ],
+  },
 };

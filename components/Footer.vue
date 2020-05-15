@@ -1,8 +1,15 @@
 <template>
   <v-container fluid pa-0>
-    <v-row style="background-color:#b40002;height:40px;" class="justify-center align-center white--text">
-      <!-- eslint-disable-next-line -->
-      <span class="subtitle text-uppercase font-weight-bold" style="line-height: 2;" v-html="$sanitize(pageInfo.Bottom) || ''"/>
+    <v-row
+      style="background-color: #b40002; height: 40px;"
+      class="justify-center align-center white--text"
+    >
+      <!-- eslint-disable vue/no-v-html -->
+      <span
+        class="subtitle text-uppercase font-weight-bold"
+        style="line-height: 2;"
+        v-html="(pageInfo && $sanitize(pageInfo.Bottom)) || ''"
+      />
     </v-row>
   </v-container>
 </template>
@@ -15,12 +22,12 @@ const {
   myDecode,
   saveLocal,
   getLocal,
-  removeLocal
+  removeLocal,
 } = require('~/utils/encryt');
 
 export default {
   data: () => ({
-    pageInfo: {}
+    pageInfo: null,
   }),
 
   async created() {
@@ -37,7 +44,7 @@ export default {
       const pageInfo = (await this.$axios(API.getPageInfo())).data[0];
       saveLocal(keys.pageInfo, pageInfo);
       return pageInfo;
-    }
-  }
+    },
+  },
 };
 </script>

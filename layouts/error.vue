@@ -19,38 +19,36 @@
 </template>
 
 <script>
-const {
-  clearLocal
-} = require('~/utils/encryt');
+const { clearLocal } = require('~/utils/encryt');
 
 export default {
   layout: 'empty',
   props: {
     error: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       pageNotFound: '404 Not Found',
-      otherError: 'Có lỗi xãy ra vui lòng tải lại trang'
+      otherError: 'Có lỗi xãy ra vui lòng tải lại trang',
     };
   },
   methods: {
     reload() {
       clearLocal();
       window.location.reload();
-    }
+    },
   },
 
   head() {
     const title =
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
     return {
-      title
+      title,
     };
-  }
+  },
 };
 </script>
 

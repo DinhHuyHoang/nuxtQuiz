@@ -33,9 +33,7 @@
                 hint="Số CMND của thí sinh"
               />
               <v-row no-gutters>
-                <v-col
-                  class="mr-2"
-                >
+                <v-col class="mr-2">
                   <v-select
                     v-model="day"
                     label="Ngày sinh"
@@ -43,9 +41,7 @@
                     :items="dayOfMonth"
                   />
                 </v-col>
-                <v-col
-                  class="mr-2"
-                >
+                <v-col class="mr-2">
                   <v-select
                     v-model="month"
                     label="Tháng sinh"
@@ -202,14 +198,14 @@ const TODAY = new Date();
 
 export default {
   components: {
-    SnackBar
+    SnackBar,
   },
 
   props: {
     model: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   async fetch() {
@@ -221,8 +217,8 @@ export default {
 
   data: () => ({
     rules: {
-      required: v => !!v || 'Không được bỏ trống',
-      email: v => /.+@.+\..+/.test(v) || 'E-mail không hợp lệ'
+      required: (v) => !!v || 'Không được bỏ trống',
+      email: (v) => /.+@.+\..+/.test(v) || 'E-mail không hợp lệ',
     },
     day: null,
     month: null,
@@ -253,7 +249,7 @@ export default {
     userInfo: '',
     studentNote: '',
     shouldReload: false,
-    isComboboxChange: false
+    isComboboxChange: false,
   }),
 
   computed: {
@@ -261,72 +257,84 @@ export default {
       const day31 = [1, 3, 5, 7, 8, 10, 12];
       const day30 = [4, 6, 9, 11];
 
-      if (day31.includes(this.month)) { return Array.from(Array(31).keys(), x => x + 1); };
-      if (day30.includes(this.month)) { return Array.from(Array(30).keys(), x => x + 1); };
+      if (day31.includes(this.month)) {
+        return Array.from(Array(31).keys(), (x) => x + 1);
+      }
+      if (day30.includes(this.month)) {
+        return Array.from(Array(30).keys(), (x) => x + 1);
+      }
 
       if (this.month === 2) {
         if (this.year % 4 === 0) {
-          return Array.from(Array(29).keys(), x => x + 1);
+          return Array.from(Array(29).keys(), (x) => x + 1);
         }
 
-        return Array.from(Array(28).keys(), x => x + 1);
+        return Array.from(Array(28).keys(), (x) => x + 1);
       }
 
-      return Array.from(Array(31).keys(), x => x + 1);
+      return Array.from(Array(31).keys(), (x) => x + 1);
     },
 
     passwordConfirmationRule() {
       return this.password === this.rePassword || 'Mật khẩu không trùng khớp';
-    }
+    },
   },
 
   watch: {
     async organizationLv1(newVal) {
-      if (!newVal) { return; }
+      if (!newVal) {
+        return;
+      }
       const { data } = await this.$axios(
         API.getOrganizations({ level: 2, selectedId: newVal?.KhoiID })
       );
       this.organizationLv2 = !this.isComboboxChange
-        ? data.find(el => el.CapID === this.userInfo.ValueCap02)
+        ? data.find((el) => el.CapID === this.userInfo.ValueCap02)
         : null;
       this.organizationsLv2 = data;
     },
 
     async organizationLv2(newVal) {
-      if (!newVal) { return; }
+      if (!newVal) {
+        return;
+      }
 
       const { data } = await this.$axios(
         API.getOrganizations({ level: 3, selectedId: newVal?.CapID })
       );
       this.organizationLv3 = !this.isComboboxChange
-        ? data.find(el => el.DonViID === this.userInfo.ValueCap03)
+        ? data.find((el) => el.DonViID === this.userInfo.ValueCap03)
         : null;
       this.organizationsLv3 = data;
     },
 
     async organizationLv3(newVal) {
-      if (!newVal) { return; }
+      if (!newVal) {
+        return;
+      }
 
       const { data } = await this.$axios(
         API.getOrganizations({ level: 4, selectedId: newVal?.DonViID })
       );
       this.organizationLv4 = !this.isComboboxChange
-        ? data.find(el => el.CoQuanID === this.userInfo.ValueCap04)
+        ? data.find((el) => el.CoQuanID === this.userInfo.ValueCap04)
         : null;
       this.organizationsLv4 = data;
     },
 
     async organizationLv4(newVal) {
-      if (!newVal) { return; }
+      if (!newVal) {
+        return;
+      }
 
       const { data } = await this.$axios(
         API.getOrganizations({ level: 5, selectedId: newVal?.CoQuanID })
       );
       this.organizationLv5 = !this.isComboboxChange
-        ? data.find(el => el.XaID === this.userInfo.ValueCap05)
+        ? data.find((el) => el.XaID === this.userInfo.ValueCap05)
         : null;
       this.organizationsLv5 = data;
-    }
+    },
   },
 
   methods: {
@@ -348,19 +356,21 @@ export default {
       this.identityCard = userInfo.SoCMND;
       this.studentNote = userInfo.StudentNote;
       this.organizationLv1 = this.organizationsLv1.find(
-        el => el.KhoiID === userInfo.ValueCap01
+        (el) => el.KhoiID === userInfo.ValueCap01
       );
     },
 
     formatNumber(number) {
       return number.toLocaleString('en-US', {
         minimumIntegerDigits: 2,
-        useGrouping: false
+        useGrouping: false,
       });
     },
 
     changeOrganization() {
-      if (!this.isComboboxChange) { this.isComboboxChange = true; };
+      if (!this.isComboboxChange) {
+        this.isComboboxChange = true;
+      }
     },
 
     async submit() {
@@ -383,10 +393,12 @@ export default {
           Cap03: this.organizationLv3?.DonViID,
           Cap04: this.organizationLv4?.CoQuanID,
           Cap05: this.organizationLv5?.XaID,
-          StudentNote: this.studentNote
+          StudentNote: this.studentNote,
         };
 
-        const { data } = await this.$axios(API.createOrUpdateUserInfo({ user }));
+        const { data } = await this.$axios(
+          API.createOrUpdateUserInfo({ user })
+        );
         if (!data[0]?.ErrCode) {
           const userInfo = (
             await this.$axios(API.userInfo({ studentId: this.userInfo.id }))
@@ -407,7 +419,7 @@ export default {
         const password = {
           id: this.userInfo.id,
           OldPass: this.oldPassword,
-          NewPass: this.password
+          NewPass: this.password,
         };
 
         const { data } = await this.$axios(API.changePassword({ password }));
@@ -418,8 +430,8 @@ export default {
           SnackBar.notify({ type: 'error', message: data[0].ErrMsg });
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

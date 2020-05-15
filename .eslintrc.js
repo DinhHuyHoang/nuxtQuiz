@@ -2,25 +2,30 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    node: true
+    node: true,
   },
   parserOptions: {
-    parser: "babel-eslint"
+    parser: 'babel-eslint',
   },
-  extends: ["@nuxtjs", "plugin:nuxt/recommended"],
-  // add your custom rules here
+  extends: [
+    'prettier',
+    '@nuxtjs',
+    'plugin:nuxt/recommended',
+    'plugin:prettier/recommended',
+    'plugin:vue/recommended',
+    'eslint:recommended',
+    'prettier/vue',
+  ],
+  globals: {
+    $nuxt: true,
+  },
+  plugins: ['prettier'],
   rules: {
-    "space-before-function-paren": [
-      "error",
-      {
-        anonymous: "always",
-        named: "never",
-        asyncArrow: "always"
-      }
-    ],
-    semi: ["error", "always"],
-    "comma-dangle": ["error", "never"],
-    "no-unused-vars": "off",
-    "no-console": "off"
-  }
+    'prettier/prettier': 'error',
+    semi: ['error', 'always'],
+    'comma-dangle': ['error', 'never'],
+    'no-unused-vars': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'comma-dangle': 'off',
+  },
 };

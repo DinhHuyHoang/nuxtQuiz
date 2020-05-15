@@ -15,9 +15,17 @@
     <v-divider />
 
     <v-list subheader dense>
-      <v-list-item v-for="item in [{key: 'DienThoai', text: 'Điện thoại'}, {key: 'NgaySinh', text: 'Ngày sinh'}, {key: 'SoCMND', text: 'CMND'}]" :key="item.key" link>
+      <v-list-item
+        v-for="item in [
+          { key: 'DienThoai', text: 'Điện thoại' },
+          { key: 'NgaySinh', text: 'Ngày sinh' },
+          { key: 'SoCMND', text: 'CMND' },
+        ]"
+        :key="item.key"
+        link
+      >
         <v-list-item-content class="pa-0">
-          <v-list-item-subtitle style="line-height:unset;" class="title">
+          <v-list-item-subtitle style="line-height: unset;" class="title">
             {{ item.text }}: {{ model[item.key] }}
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -30,9 +38,18 @@
       <v-list-item class="title font-weight-bold text-uppercase">
         Lần thi điểm cao nhất
       </v-list-item>
-      <v-list-item v-for="item in [{key: 'NgayThi', text: 'Lúc'}, {key: 'SoCauDung', text: 'Số câu đúng'}, {key: 'DiemThi', text: 'Điểm thi'}, {key: 'ThoiGianLamBai', text: 'Thời gian (giây)'}]" :key="item.key" link>
+      <v-list-item
+        v-for="item in [
+          { key: 'NgayThi', text: 'Lúc' },
+          { key: 'SoCauDung', text: 'Số câu đúng' },
+          { key: 'DiemThi', text: 'Điểm thi' },
+          { key: 'ThoiGianLamBai', text: 'Thời gian (giây)' },
+        ]"
+        :key="item.key"
+        link
+      >
         <v-list-item-content class="pa-0">
-          <v-list-item-subtitle style="line-height:unset;" class="title">
+          <v-list-item-subtitle style="line-height: unset;" class="title">
             {{ item.text }}: {{ model[item.key] }}
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -73,20 +90,20 @@ export default {
   props: {
     model: {
       type: Object,
-      required: true
+      required: true,
     },
 
     dialog: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   methods: {
     logout() {
       clearLocal();
       window.location.reload();
-    }
-  }
+    },
+  },
 };
 </script>

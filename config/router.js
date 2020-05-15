@@ -3,16 +3,16 @@ module.exports = [
   {
     name: 'index',
     path: '/',
-    component: 'pages/index.vue'
+    component: 'pages/index.vue',
   },
   {
     name: 'login',
     path: '/login',
-    component: 'pages/login.vue'
+    component: 'pages/login.vue',
   },
   {
     name: 'resetPassword',
     path: '/reset-password',
-    component: 'pages/resetPassword.vue'
-  }
+    component: 'pages/resetPassword.vue',
+  },
 ];

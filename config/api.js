@@ -9,35 +9,35 @@ export default {
   login({ phone, maDuThi }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientCheckLogin/${phone}/${maDuThi}`
+      url: baseURL + `/ClientCheckLogin/${phone}/${maDuThi}`,
     };
   },
 
   signUpAndLogin({ phone, maDuThi }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientLoginFirstTimetByPhone/${phone}/${maDuThi}`
+      url: baseURL + `/ClientLoginFirstTimetByPhone/${phone}/${maDuThi}`,
     };
   },
 
   userInfo({ studentId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientGetStudentInform/${studentId}`
+      url: baseURL + `/ClientGetStudentInform/${studentId}`,
     };
   },
 
   examInfo({ studentId }) {
     return {
       method: 'GET',
-      url: baseURL + `/obj/ClientGetExamInform/${studentId}`
+      url: baseURL + `/obj/ClientGetExamInform/${studentId}`,
     };
   },
 
   getQuestions({ studentId, studentTestId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientQuestion/${studentId}/${studentTestId}`
+      url: baseURL + `/ClientQuestion/${studentId}/${studentTestId}`,
     };
   },
 
@@ -47,78 +47,80 @@ export default {
       url: baseURL + `/ClientAnswer/${studentId}/${studentTestId}`,
       data: {
         ClientInfo: clientInfo,
-        SessionID: captcha
-      }
+        SessionID: captcha,
+      },
     };
   },
 
   updateAnswers({ studentTestId, questionId, answerId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientUpdate/${studentTestId}/${questionId}/${answerId}`
+      url: baseURL + `/ClientUpdate/${studentTestId}/${questionId}/${answerId}`,
     };
   },
 
   updateTimeRemain({ studentTestId, questionId, timeRemaining, answer }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientNextQuestion/${studentTestId}/${questionId}/${timeRemaining}/${answer}`
+      url:
+        baseURL +
+        `/ClientNextQuestion/${studentTestId}/${questionId}/${timeRemaining}/${answer}`,
     };
   },
 
   finishedTest({ studentTestId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientFinish/${studentTestId}`
+      url: baseURL + `/ClientFinish/${studentTestId}`,
     };
   },
 
   getPageInfo() {
     return {
       method: 'GET',
-      url: baseURL + '/PageInform'
+      url: baseURL + '/PageInform',
     };
   },
 
   getExamById({ adminId, tenBang }) {
     return {
       method: 'GET',
-      url: baseURL + `/Sys_GetResultByType/${adminId}/${tenBang}`
+      url: baseURL + `/Sys_GetResultByType/${adminId}/${tenBang}`,
     };
   },
 
   getAlert({ studentId, studentTestId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientAlert/${studentId}/${studentTestId}`
+      url: baseURL + `/ClientAlert/${studentId}/${studentTestId}`,
     };
   },
 
   getAlertLogin() {
     return {
       method: 'GET',
-      url: baseURL + '/LoginAlert'
+      url: baseURL + '/LoginAlert',
     };
   },
 
   getExamStatus({ studentId, examId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientCheckStatus/${studentId}/${examId}`
+      url: baseURL + `/ClientCheckStatus/${studentId}/${examId}`,
     };
   },
 
   getTopScore({ studentId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientTopScoreInExam/${studentId}`
+      url: baseURL + `/ClientTopScoreInExam/${studentId}`,
     };
   },
 
   getOrganizations({ level, selectedId }) {
     return {
       method: 'GET',
-      url: baseURL + `/Client_cboCap0${level}_Select/${selectedId || ''}`
+      url: baseURL + `/Client_cboCap0${level}_Select/${selectedId || ''}`,
     };
   },
 
@@ -126,7 +128,7 @@ export default {
     return {
       method: 'POST',
       url: baseURL + '/ClientUpdateInformation',
-      data: { ...user }
+      data: { ...user },
     };
   },
 
@@ -134,43 +136,44 @@ export default {
     return {
       method: 'POST',
       url: baseURL + '/ClientPasswordChange',
-      data: { ...password }
+      data: { ...password },
     };
   },
 
   getExamHistories({ studentId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientGetPageCount/${studentId}`
+      url: baseURL + `/ClientGetPageCount/${studentId}`,
     };
   },
 
   getExamHistory({ studentId, page }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientHistorySelect/${studentId}/${page}`
+      url: baseURL + `/ClientHistorySelect/${studentId}/${page}`,
     };
   },
 
   getScores({ studentId, studentTestId }) {
     return {
       method: 'GET',
-      url: baseURL + `/ClientGetMark/${studentId}/${studentTestId}`
+      url: baseURL + `/ClientGetMark/${studentId}/${studentTestId}`,
     };
   },
 
-  resetPassword({ phone }) { // ClientPasswordReset
+  resetPassword({ phone }) {
+    // ClientPasswordReset
     return {
       method: 'POST',
       url: baseURL + '/ClientPasswordReset',
-      data: { ...phone }
+      data: { ...phone },
     };
   },
 
   getCaptcha({ studentTestId }) {
     return {
       method: 'GET',
-      url: baseURL + `/obj/ClientSessionID/${studentTestId}`
+      url: baseURL + `/obj/ClientSessionID/${studentTestId}`,
     };
-  }
+  },
 };

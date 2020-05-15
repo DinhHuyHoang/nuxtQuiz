@@ -1,17 +1,8 @@
 <template>
   <div class="text-center">
-    <v-snackbar
-      v-model="isShowUp"
-      top
-      :color="type"
-      :timeout="timeout"
-    >
+    <v-snackbar v-model="isShowUp" top :color="type" :timeout="timeout">
       {{ message }}
-      <v-btn
-        color="white"
-        text
-        @click="isShowUp = false"
-      >
+      <v-btn color="white" text @click="isShowUp = false">
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
@@ -24,7 +15,7 @@ export default {
     isShowUp: false,
     message: '',
     timeout: 5000,
-    type: ''
+    type: '',
   }),
 
   methods: {
@@ -39,7 +30,7 @@ export default {
           callback();
         }, timeout);
       }
-    }
-  }
+    },
+  },
 };
 </script>

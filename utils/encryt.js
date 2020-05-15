@@ -29,7 +29,9 @@ export const saveLocal = function (key, value) {
 
 export const getLocal = function (key) {
   const value = localStorage.getItem(key);
-  if (value) { return JSON.parse(myDecode(value)); }
+  if (value) {
+    return JSON.parse(myDecode(value));
+  }
   return false;
 };
 

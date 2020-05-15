@@ -116,7 +116,7 @@ export default {
   components: {
     SnackBar,
     Alert,
-    Header
+    Header,
   },
   async asyncData({ redirect, $axios }) {
     const studentId = getLocal(keys.studentId);
@@ -132,8 +132,8 @@ export default {
       alert: {
         type: 'info',
         message,
-        color: 'rgba(53, 131, 218, 0.7)'
-      }
+        color: 'rgba(53, 131, 218, 0.7)',
+      },
     };
   },
 
@@ -141,7 +141,7 @@ export default {
     socket: null,
     alert: {
       message: '',
-      type: 'info'
+      type: 'info',
     },
     show1: false,
     haveNotAccount: false,
@@ -149,7 +149,7 @@ export default {
     emailOrPhone: '',
     maDuThi: '',
     rules: {
-      required: value => !!value || 'Không được bỏ trống trường này',
+      required: (value) => !!value || 'Không được bỏ trống trường này',
       email: (value) => {
         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return pattern.test(value) || 'Email không hợp lệ';
@@ -160,16 +160,18 @@ export default {
           (!pattern.test(value) && value.length <= 20) ||
           'Số điện thoại không hợp lệ'
         );
-      }
-    }
+      },
+    },
   }),
 
   computed: {
     ...mapState(['chatMessages']),
     emailOrPhoneCommit() {
-      if (!isNaN(this.emailOrPhone)) { return this.rules.phoneNumber(this.emailOrPhone); };
+      if (!isNaN(this.emailOrPhone)) {
+        return this.rules.phoneNumber(this.emailOrPhone);
+      }
       return this.rules.email(this.emailOrPhone);
-    }
+    },
   },
 
   // mounted() {
@@ -185,7 +187,7 @@ export default {
           const { data } = await this.$axios(
             API[this.haveNotAccount ? 'signUpAndLogin' : 'login']({
               phone: this.phone.trim(),
-              maDuThi: this.maDuThi.trim()
+              maDuThi: this.maDuThi.trim(),
             })
           );
 
@@ -197,7 +199,7 @@ export default {
               timeout: 1000,
               callback: () => {
                 this.$router.push('/');
-              }
+              },
             });
           } else {
             SnackBar.notify({ type: 'error', message: data[0].ErrMsg });
@@ -206,8 +208,8 @@ export default {
           console.error({ error });
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

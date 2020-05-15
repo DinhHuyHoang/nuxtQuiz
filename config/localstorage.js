@@ -8,5 +8,5 @@ export const keys = {
   answers: 'answers',
   currentQuestion: 'currentQuestion',
   alertInfo: 'alertInfo',
-  pageInfo: 'pageInfo'
+  pageInfo: 'pageInfo',
 };

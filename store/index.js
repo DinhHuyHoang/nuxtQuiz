@@ -6,9 +6,9 @@ Vue.use(Vuex);
 const createStore = () => {
   return new Vuex.Store({
     modules: {
-      moduleSocket
+      moduleSocket,
     },
-    strict: false
+    strict: false,
   });
 };
 

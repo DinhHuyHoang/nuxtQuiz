@@ -30,9 +30,9 @@
                 </v-col>
                 <v-col>
                   <div>
-                    <strong
-                      class="font-weight-black"
-                    >: {{ model.StartTime }}</strong>
+                    <strong class="font-weight-black">
+                      : {{ model.StartTime }}
+                    </strong>
                   </div>
                 </v-col>
               </v-row>
@@ -49,9 +49,9 @@
                 </v-col>
                 <v-col>
                   <div>
-                    <strong
-                      class="font-weight-black"
-                    >: {{ model.endTime }}</strong>
+                    <strong class="font-weight-black">
+                      : {{ model.endTime }}
+                    </strong>
                   </div>
                 </v-col>
               </v-row>
@@ -69,9 +69,9 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong
-                    class="font-weight-black"
-                  >: {{ model.TongSoCau }}</strong>
+                  <strong class="font-weight-black"
+                    >: {{ model.TongSoCau }}</strong
+                  >
                 </div>
               </v-col>
             </v-row>
@@ -88,9 +88,9 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong
-                    class="font-weight-black"
-                  >: {{ model.TimePerQuestion }}</strong>
+                  <strong class="font-weight-black"
+                    >: {{ model.TimePerQuestion }}</strong
+                  >
                   giây
                 </div>
               </v-col>
@@ -105,9 +105,9 @@
               </v-col>
               <v-col>
                 <div>
-                  <strong
-                    class="font-weight-black"
-                  >: {{ model.TinhTrangLamBai }}</strong>
+                  <strong class="font-weight-black"
+                    >: {{ model.TinhTrangLamBai }}</strong
+                  >
                 </div>
               </v-col>
             </v-row>
@@ -115,15 +115,13 @@
         </v-row>
         <v-spacer class="mt-5" />
         <div class="text-justify">
-          <strong
-            class="subtitle-1 red--text font-weight-black font-italic"
-          >{{ model.ThongTin }}
+          <strong class="subtitle-1 red--text font-weight-black font-italic"
+            >{{ model.ThongTin }}
           </strong>
         </div>
         <div class="text-justify mt-3">
-          <strong
-            class="subtitle-1 red--text font-weight-black font-italic"
-          >Ghi chú: {{ model.GhiChu }}
+          <strong class="subtitle-1 red--text font-weight-black font-italic"
+            >Ghi chú: {{ model.GhiChu }}
           </strong>
         </div>
       </v-card-text>
@@ -135,7 +133,7 @@
           <v-row class="justify-center">
             <v-col class="py-0" cols="12">
               <div class="text-center">
-                <img :src="`data:image/png;base64,${captchaImage}`" alt="">
+                <img :src="`data:image/png;base64,${captchaImage}`" alt="" />
               </div>
             </v-col>
             <v-col cols="12" />
@@ -160,10 +158,10 @@
         >
           {{
             model.TestStatus === 0
-              ? "Làm bài"
+              ? 'Làm bài'
               : model.TestStatus === 1
-                ? "Tiếp tục làm bài"
-                : "Kết thúc"
+              ? 'Tiếp tục làm bài'
+              : 'Kết thúc'
           }}
         </v-btn>
       </v-card-actions>
@@ -178,13 +176,13 @@ export default {
   props: {
     model: {
       type: Object,
-      required: true
+      required: true,
     },
 
     doTest: {
       type: Function,
-      required: true
-    }
+      required: true,
+    },
   },
 
   async fetch() {
@@ -214,11 +212,11 @@ export default {
 
   data: () => ({
     rules: {
-      required: value => !!value || 'Không được bỏ trống trường này'
+      required: (value) => !!value || 'Không được bỏ trống trường này',
     },
     currentExam: null,
     captchaImage: null,
-    captcha: null
+    captcha: null,
   }),
 
   methods: {
@@ -238,7 +236,7 @@ export default {
     confirmEl(event, exam) {
       this.elDoExam = event.target;
       this.currentExam = exam;
-    }
-  }
+    },
+  },
 };
 </script>

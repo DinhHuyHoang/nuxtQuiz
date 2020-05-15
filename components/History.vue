@@ -63,13 +63,13 @@ export default {
     studentId: null,
     lenghtPage: 0,
     page: 0,
-    exams: []
+    exams: [],
   }),
 
   watch: {
     page() {
       this.changePage();
-    }
+    },
   },
 
   async created() {
@@ -87,7 +87,7 @@ export default {
           API.getExamHistory({ studentId: this.studentId, page: this.page })
         )
       ).data;
-    }
-  }
+    },
+  },
 };
 </script>

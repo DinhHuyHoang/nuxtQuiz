@@ -15,9 +15,7 @@
               <v-row justify="center">
                 <v-col cols="12">
                   <v-spacer class="my-5" />
-                  <v-sheet
-                    class="overflow-hidden"
-                  >
+                  <v-sheet class="overflow-hidden">
                     <v-row align="center" justify="center">
                       <v-col cols="12" sm="10" md="8" lg="7">
                         <v-row no-gutters="">
@@ -58,7 +56,7 @@
               <v-row>
                 <v-col>
                   <Competition
-                    :model="{ userInfo, examInfo: currentExam, captcha}"
+                    :model="{ userInfo, examInfo: currentExam, captcha }"
                     :finished-exam="finished"
                     :hidden-header="hiddenHeader"
                     :back="back"
@@ -160,7 +158,7 @@ const {
   myDecode,
   saveLocal,
   getLocal,
-  removeKeyLocal
+  removeKeyLocal,
 } = require('~/utils/encryt');
 
 export default {
@@ -172,7 +170,7 @@ export default {
     UpdateUser,
     History,
     Header,
-    Footer
+    Footer,
   },
 
   async asyncData({ $axios, redirect }) {
@@ -185,10 +183,10 @@ export default {
     const [userInfo, examInfo] = await Promise.all([
       $axios(API.userInfo({ studentId })),
       $axios(API.examInfo({ studentId })),
-      $axios(API.getTopScore({ studentId }))
+      $axios(API.getTopScore({ studentId })),
     ]).then(([res1, res2, res3]) => [
       { ...res1.data[0], ...res3.data[0] },
-      res2.data
+      res2.data,
     ]);
 
     saveLocal(keys.studentInfo, userInfo);
@@ -206,14 +204,14 @@ export default {
     dialogBack: false,
     isDoingTest: false,
     currentExam: {
-      TestStatus: 1
+      TestStatus: 1,
     },
     snackBar: {
       isShowUp: false,
       message: '',
-      type: 'success'
+      type: 'success',
     },
-    window: null
+    window: null,
   }),
 
   watch: {
@@ -222,12 +220,12 @@ export default {
         const studentId = this.studentId;
         this.userInfo = await Promise.all([
           this.$axios(API.userInfo({ studentId })),
-          this.$axios(API.getTopScore({ studentId }))
+          this.$axios(API.getTopScore({ studentId })),
         ]).then(([res1, res2]) => ({ ...res1.data[0], ...res2.data[0] }));
 
         saveLocal(keys.studentInfo, this.userInfo);
       }
-    }
+    },
   },
 
   created() {
@@ -236,7 +234,7 @@ export default {
 
     if (currentExam) {
       this.currentExam = this.examInfo.find(
-        item => item.StudentTestID === currentExam.StudentTestID
+        (item) => item.StudentTestID === currentExam.StudentTestID
       );
       if (!this.currentExam) {
         this.finished();
@@ -256,7 +254,7 @@ export default {
     const socket = this.$nuxtSocket({
       name: process.env.NODE_ENV === 'development' ? 'test' : 'home',
       teardown: false,
-      transports: ['websocket']
+      transports: ['websocket'],
     });
 
     this.initSocket({ socket });
@@ -264,7 +262,7 @@ export default {
 
   methods: {
     ...mapActions({
-      initSocket: 'moduleSocket/initializeSocket'
+      initSocket: 'moduleSocket/initializeSocket',
     }),
 
     async fetchStudenInfo(studentId) {
@@ -327,7 +325,9 @@ export default {
       this.dialogBack = false;
       this.isHiddenHeader = false;
 
-      this.examInfo = (await this.$axios(API.examInfo({ studentId: this.studentId }))).data;
+      this.examInfo = (
+        await this.$axios(API.examInfo({ studentId: this.studentId }))
+      ).data;
       saveLocal(keys.examInfo, this.examInfo);
       removeKeyLocal(keys.currentExam);
       removeKeyLocal(keys.alertInfo);
@@ -347,7 +347,7 @@ export default {
 
     hiddenHeader() {
       this.isHiddenHeader = true;
-    }
-  }
+    },
+  },
 };
 </script>

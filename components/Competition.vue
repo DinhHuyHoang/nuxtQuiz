@@ -4,7 +4,7 @@
       <!-- timer bar -->
       <v-row no-gutters class="fixed">
         <v-col>
-          <v-card style="border-radius:0;" flat color="#b40002">
+          <v-card style="border-radius: 0;" flat color="#b40002">
             <v-card-text class="pa-1 white--text">
               <v-row
                 style="height: 48px;"
@@ -51,7 +51,7 @@
             <v-row style="user-select: none;" justify="center">
               <v-col cols="12" sm="10" md="8" class="pa-0">
                 <v-card v-if="!isFinished" class="mt-3" flat>
-                  <v-card-text style="color:black">
+                  <v-card-text style="color: black;">
                     <v-row v-if="isLoading" class="text-center">
                       <v-col>
                         <v-progress-circular indeterminate color="primary" />
@@ -62,21 +62,24 @@
                     >
                       <v-col>
                         <p style="text-align: justify;" class="headline">
-                          {{ currentQuestion.STT + ". " }}
-                          <!-- eslint-disable-next-line vue/no-v-html -->
-                          <span v-html="$sanitize(currentQuestion.QuestionContent)" />
+                          {{ currentQuestion.STT + '. ' }}
+                          <!-- eslint-disable vue/no-v-html -->
+                          <span
+                            v-html="$sanitize(currentQuestion.QuestionContent)"
+                          />
                         </p>
                         <div @click="selectAnswerMouseDown">
-                          <v-radio-group v-model="modelRadio" @change="selectAnswer">
+                          <v-radio-group
+                            v-model="modelRadio"
+                            @change="selectAnswer"
+                          >
                             <v-radio
                               v-for="(answer,
-                                      answerKey) in currentQuestion.answers"
+                              answerKey) in currentQuestion.answers"
                               :key="answerKey"
                               :disabled="isLastQuestion"
                               class="py-2"
-                              :label="
-                                `${answer.alphabet}. ${answer.AnswerContent}`
-                              "
+                              :label="`${answer.alphabet}. ${answer.AnswerContent}`"
                               :value="answer.AnswerNumber"
                             />
                           </v-radio-group>
@@ -166,29 +169,29 @@ function* getByInterval(data) {
 
 export default {
   components: {
-    SnackBar
+    SnackBar,
   },
 
   props: {
     model: {
       type: Object,
-      required: true
+      required: true,
     },
 
     finishedExam: {
       type: Function,
-      required: true
+      required: true,
     },
 
     hiddenHeader: {
       type: Function,
-      required: true
+      required: true,
     },
 
     back: {
       type: Function,
-      required: true
-    }
+      required: true,
+    },
   },
 
   async fetch() {
@@ -205,8 +208,8 @@ export default {
 
       const [questions, answers] = await Promise.all([
         this.fetchQuestion(studentId, studentTestId),
-        this.fetchAnswer(studentId, studentTestId)
-      ]).then(res => res);
+        this.fetchAnswer(studentId, studentTestId),
+      ]).then((res) => res);
 
       if (!questions.length || !answers.length) {
         this.$nextTick(() => {
@@ -217,7 +220,7 @@ export default {
             timeout: 4000,
             callBack: () => {
               this.finishedExam();
-            }
+            },
           });
         });
 
@@ -253,7 +256,9 @@ export default {
           type: 'error',
           message: error.message || '',
           timeout: 5000,
-          callback: () => { this.finishedExam(); }
+          callback: () => {
+            this.finishedExam();
+          },
         });
       });
     }
@@ -284,14 +289,14 @@ export default {
       scores: null,
       elNextQuestion: null,
       isUserClick: false,
-      isSelectAnswerClick: undefined
+      isSelectAnswerClick: undefined,
     };
   },
 
   computed: {
     ...mapState({
-      socket: state => state.moduleSocket.socket
-    })
+      socket: (state) => state.moduleSocket.socket,
+    }),
   },
 
   beforeDestroy() {
@@ -305,7 +310,6 @@ export default {
       // this.socket.on('nextQuestionRes', (data) => {
       //   console.log('nextQuestionRes',JSON.parse(myDecode(data)))
       // })
-
       // window.onbeforeunload = (event) => {
       //   if (this.checkNativeInterval()) {
       //     if (!this.isFinished) {
@@ -330,13 +334,15 @@ export default {
   methods: {
     checkExsitsResolveQuestion() {
       const data = getLocal(keys.questions);
-      const index = data.findIndex(item => item.state === 'pendding');
+      const index = data.findIndex((item) => item.state === 'pendding');
       return index !== -1;
     },
 
     async fetchAnswerQuestion() {
       const localQuestions = getLocal(keys.questions);
-      const index = localQuestions.findIndex(item => item.state === 'pendding');
+      const index = localQuestions.findIndex(
+        (item) => item.state === 'pendding'
+      );
 
       try {
         if (index !== -1) {
@@ -347,7 +353,7 @@ export default {
             myEncode(
               JSON.stringify({
                 ...currentQuestion,
-                userInfo: { ...this.userInfo }
+                userInfo: { ...this.userInfo },
               })
             ),
             ({ data }) => {
@@ -387,7 +393,7 @@ export default {
               studentTestId: currentQuestion.StudentTestID,
               questionId: currentQuestion.QuestionID,
               timeRemaining: currentQuestion.timeAnswer,
-              answer: currentQuestion.answerSelected
+              answer: currentQuestion.answerSelected,
             })
           );
         }
@@ -405,7 +411,7 @@ export default {
           const { data } = await this.$axios(
             API.getScores({
               studentId: this.userInfo.id,
-              studentTestId: this.examInfo.StudentTestID
+              studentTestId: this.examInfo.StudentTestID,
             })
           );
 
@@ -435,7 +441,7 @@ export default {
         const { SnackBar } = this.$refs;
         SnackBar.notify({
           type: 'warning',
-          message: alertInfo?.GhiChu || ''
+          message: alertInfo?.GhiChu || '',
         });
       });
     },
@@ -465,7 +471,7 @@ export default {
             studentId,
             studentTestId,
             clientInfo: this.getDeviceInfo(),
-            captcha: this.model.captcha || ''
+            captcha: this.model.captcha || '',
           })
         )
       ).data;
@@ -504,7 +510,7 @@ export default {
       }
 
       const index = questions.findIndex(
-        question => question.STT === curQuestion.STT
+        (question) => question.STT === curQuestion.STT
       );
 
       return questions.slice(index);
@@ -516,8 +522,10 @@ export default {
       for (const question of questions) {
         const { QuestionID, isDecode, QuestionContent, OrderAnswer } = question;
 
-        const arr = answers.filter(answer => answer.QuestionID === QuestionID);
-        const OrderAnswerFake = Object.keys(arr).map(key => Number(key) + 1);
+        const arr = answers.filter(
+          (answer) => answer.QuestionID === QuestionID
+        );
+        const OrderAnswerFake = Object.keys(arr).map((key) => Number(key) + 1);
 
         let answersPerQuestion = this.getAnswersByQuestion(QuestionID, answers);
         answersPerQuestion = this.sortAnswerByRule(
@@ -534,7 +542,7 @@ export default {
           timeAnswer: null,
           state: 'init',
           QuestionContent: questionContent,
-          isDecode: true
+          isDecode: true,
         };
 
         result.push({ ...questionTransform, answers: answersPerQuestion });
@@ -586,17 +594,17 @@ export default {
       this.currentQuestion = {
         ...this.currentQuestion,
         timeAnswer: 61, // (timeRemain <= 0 ? 0 : timeRemain) * -1,
-        state: 'pendding'
+        state: 'pendding',
       };
 
       const index = this.questions.findIndex(
-        question => question.STT === this.currentQuestion.STT
+        (question) => question.STT === this.currentQuestion.STT
       );
 
       if (index !== -1) {
         this.questions[index] = {
           ...this.currentQuestion,
-          QuestionContent: this.questions[index].QuestionContent
+          QuestionContent: this.questions[index].QuestionContent,
         };
 
         saveLocal(keys.questions, this.questions);
@@ -605,12 +613,12 @@ export default {
 
     sortAnswerByRule(ruleOrder, answers) {
       if (ruleOrder && answers.length) {
-        const rules = ruleOrder.split('').map(item => Number(item));
+        const rules = ruleOrder.split('').map((item) => Number(item));
         let i = 0;
         const result = [];
 
         for (const rule of rules) {
-          const answer = answers.find(answer => answer.AnswerNumber === rule);
+          const answer = answers.find((answer) => answer.AnswerNumber === rule);
           answer.alphabet = String.fromCharCode(65 + i);
           result.push(answer);
           i++;
@@ -638,13 +646,13 @@ export default {
 
         await this.$axios(
           API.finishedTest({
-            studentTestId: this.examInfo.StudentTestID
+            studentTestId: this.examInfo.StudentTestID,
           })
         );
 
         const dataSocket = myEncode(
           JSON.stringify({
-            studentTestId: this.examInfo.StudentTestID
+            studentTestId: this.examInfo.StudentTestID,
           })
         );
 
@@ -692,7 +700,7 @@ export default {
             timeout: 4000,
             callBack: () => {
               this.finishedExam();
-            }
+            },
           });
         });
         return;
@@ -722,8 +730,8 @@ export default {
     checkNativeInterval() {
       const isValid = /\{\s+\[native code\]/.test(setInterval.toString());
       return isValid;
-    }
-  }
+    },
+  },
 };
 </script>
 
