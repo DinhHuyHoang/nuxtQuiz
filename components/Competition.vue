@@ -532,9 +532,14 @@ export default {
           OrderAnswerFake.join(''),
           answersPerQuestion
         );
-        const questionContent = isDecode
-          ? QuestionContent
-          : Base64.decode(QuestionContent);
+
+        let questionContent = null;
+
+        try {
+          questionContent = Base64.decode(QuestionContent);
+        } catch (error) {
+          questionContent = QuestionContent;
+        }
 
         const questionTransform = {
           ...question,

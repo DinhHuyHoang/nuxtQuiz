@@ -282,9 +282,6 @@ export default {
 
   watch: {
     async organizationLv1(newVal) {
-      if (!newVal) {
-        return;
-      }
       const { data } = await this.$axios(
         API.getOrganizations({ level: 2, selectedId: newVal?.KhoiID })
       );
@@ -295,10 +292,6 @@ export default {
     },
 
     async organizationLv2(newVal) {
-      if (!newVal) {
-        return;
-      }
-
       const { data } = await this.$axios(
         API.getOrganizations({ level: 3, selectedId: newVal?.CapID })
       );
@@ -309,10 +302,6 @@ export default {
     },
 
     async organizationLv3(newVal) {
-      if (!newVal) {
-        return;
-      }
-
       const { data } = await this.$axios(
         API.getOrganizations({ level: 4, selectedId: newVal?.DonViID })
       );
@@ -323,10 +312,6 @@ export default {
     },
 
     async organizationLv4(newVal) {
-      if (!newVal) {
-        return;
-      }
-
       const { data } = await this.$axios(
         API.getOrganizations({ level: 5, selectedId: newVal?.CoQuanID })
       );
