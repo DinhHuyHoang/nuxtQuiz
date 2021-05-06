@@ -19,7 +19,7 @@
     "js-base64": "^2.5.2",
     "nuxt": "^2.0.0",
     "nuxt-socket-io": "^1.0.25",
-    "sanitize-html": "^1.23.0"
+    "sanitize-html": "^2.3.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
